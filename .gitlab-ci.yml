@@ -53,11 +53,13 @@ before_script:
 
 
 # Use cargo to build the project
-build:cargo:
+cargo:
+  stage: build
   script:
     - rustc --version && cargo --version  # Print version info for debugging
     - cargo build --workspace --verbose
 
-deploy:andromeda:
+andromeda:
+  stage: deploy 
   script:
     - ssh git@159.89.105.142 /usr/local/bin/bot.sh
