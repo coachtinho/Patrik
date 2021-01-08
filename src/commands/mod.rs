@@ -1,6 +1,6 @@
 use serenity::client::Context;
 use serenity::model::channel::Message;
-use serenity::model::id::ChannelId;
+use serenity::model::id::{ ChannelId, UserId };
 use serenity::model::gateway::Activity;
 use serenity::framework::standard::{
     CommandResult,

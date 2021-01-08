@@ -24,31 +24,47 @@ async fn is_owner(_: &Context, msg: &Message, _: &mut Args, _: &CommandOptions) 
 }
 
 // Makes bot send message to a certain channel
-// TODO: Add support for DMs
 #[command]
 async fn message(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     log::info!("Received message command");
 
     if let Ok(id) = args.single::<u64>() {
-        let channel_id = ChannelId::from(id);
 
         if !args.rest().is_empty() {
             let message = args.rest();
 
-            if let Err(err) = channel_id.say(&ctx, message).await {
-                log::error!("Failed to send message: {:?}", err);
-                msg.reply(&ctx, "Invalid id").await?;
+            // Try to send message to a channel
+            let channel_id = ChannelId::from(id);
+
+            if let Ok(_) = channel_id.say(ctx, message).await {
+                msg.channel_id.say(ctx, "Message sent to channel").await?;
             } else {
-                msg.channel_id.say(&ctx, "Message sent").await?;
+
+                // Try to send message to a user
+                match UserId::from(id).create_dm_channel(ctx).await {
+                    Err(err) => {
+                        log::error!("Failed to send message: {:?}", err);
+                        msg.reply(ctx, "Invalid id").await?;
+                    },
+                    Ok(channel) => {
+                        if let Err(err) = channel.say(ctx, message).await {
+                            log::error!("Failed to send message: {:?}", err);
+                            msg.reply(ctx, "Failed to send the message").await?;
+                        } else {
+                            msg.channel_id.say(ctx, "Message sent to user").await?;
+                        }
+                    }
+                };
             }
+
         } else {
             log::error!("No message provided");
-            msg.reply(&ctx, "No message provided").await?;
+            msg.reply(ctx, "No message provided").await?;
         }
         
     } else {
         log::error!("Invalid id");
-        msg.reply(&ctx, "Invalid id").await?;
+        msg.reply(ctx, "Invalid id").await?;
     }
 
     Ok(())
