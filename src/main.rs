@@ -42,7 +42,9 @@ async fn error_hook(ctx: &Context, msg: &Message, error: DispatchError) {
 
 #[tokio::main]
 async fn main() {
-    env_logger::Builder::from_env(Env::default().default_filter_or("patrik=info"))
+    let log_level = dotenv::var("LOG_LEVEL").unwrap_or(String::from("patrik=info"));
+
+    env_logger::Builder::from_env(Env::default().default_filter_or(log_level))
         .format_timestamp(None)
         .init();
 
