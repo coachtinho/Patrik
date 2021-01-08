@@ -5,6 +5,7 @@ use serenity::model::channel::{ Channel, Message };
 use serenity::model::gateway::Ready;
 use serenity::model::id::{ ChannelId, MessageId };
 use patrik::*;
+use rand::Rng;
 
 pub struct Handler;
 
@@ -24,16 +25,14 @@ impl EventHandler for Handler {
             Err(err) => log::error!("Failed getting message channel: {:?}", err),
 
             Ok(Channel::Private(_)) => log::debug!(
-                "{}#{} (DM): {}",
-                msg.author.name,
-                msg.author.discriminator,
+                "{} (DM): {}",
+                msg.author.tag(),
                 msg.content_safe(&ctx).await
             ),
 
             Ok(Channel::Guild(channel)) => log::debug!(
-                "{}#{} (#{}): {}",
-                msg.author.name,
-                msg.author.discriminator,
+                "{} (#{}): {}",
+                msg.author.tag(),
                 channel.name,
                 msg.content_safe(&ctx).await
             ),
@@ -56,10 +55,16 @@ impl EventHandler for Handler {
             Err(err) => log::error!("Failed getting deleted message channel: {:?}", err),
 
             Ok(Channel::Guild(channel)) => {
-                log::info!("Message deleted in #{}", channel.name);
+                log::debug!("Message deleted in #{}", channel.name);
+                let random = rand::thread_rng().gen_range(1..=100);
+                log::debug!("Random number generated: {}", random);
 
-                if let Err(err) = channel_id.say(&ctx, "Quem viu viu").await {
-                    log::error!("Failed sending message: {:?}", err);
+                if random < 11 {
+                    log::info!("Reacting to deleted message in #{}", channel.name);
+
+                    if let Err(err) = channel_id.say(&ctx, "I saw what you deleted").await {
+                        log::error!("Failed sending message: {:?}", err);
+                    }
                 }
             },
             _ => {}
