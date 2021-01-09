@@ -9,7 +9,7 @@ pub struct Owner;
 // Checks if author of messaage is bot owner
 #[check]
 async fn is_owner(_: &Context, msg: &Message, _: &mut Args, _: &CommandOptions) -> CheckResult {
-    log::info!("Checking if is owner");
+    log::debug!("Checking if is owner");
 
     if let Ok(owner) = dotenv::var("OWNER_ID") {
         let owner = owner.parse::<u64>().unwrap_or(0); 

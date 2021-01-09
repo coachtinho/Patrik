@@ -59,7 +59,7 @@ impl EventHandler for Handler {
                 let random = rand::thread_rng().gen_range(1..=100);
                 log::debug!("Random number generated: {}", random);
 
-                if random < 11 {
+                if random < 2 {
                     log::info!("Reacting to deleted message in #{}", channel.name);
 
                     if let Err(err) = channel_id.say(&ctx, "I saw what you deleted").await {
