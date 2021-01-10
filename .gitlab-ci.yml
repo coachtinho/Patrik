@@ -57,9 +57,10 @@ cargo:
   stage: build
   script:
     - rustc --version && cargo --version  # Print version info for debugging
-    - cargo build --workspace --verbose
+    - cargo build --workspace --verbose --release
+    - "scp target/release/patrik git@159.89.105.142:~/.cargo/bin/patrik"
 
 andromeda:
   stage: deploy 
   script:
-    - ssh git@159.89.105.142 /usr/local/bin/bot.sh
+    - ssh git@159.89.105.142 sudo systemctl restart discord
