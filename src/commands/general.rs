@@ -1,7 +1,7 @@
 use super::*;
 
 #[group]
-#[commands(ping, say, avatar)]
+#[commands(ping, say, avatar, futbin)]
 pub struct General;
  
 #[command]
@@ -41,7 +41,34 @@ async fn avatar(ctx: &Context, msg: &Message) -> CommandResult {
     let avatar = msg.author.face();
 
     if let Err(err) = msg.channel_id.say(ctx, avatar).await {
-        log::error!("Failed getting avatar: {:?}", err);
+        log::error!("Failed sending message: {:?}", err);
+    }
+
+    Ok(())
+}
+
+#[command]
+async fn futbin(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
+    log::info!("Received futbin from {}", msg.author.tag());
+
+    if args.is_empty() {
+        if let Err(err) = msg.reply(ctx, "No player provided").await {
+            log::error!("Failed sending message: {}", err);
+        }
+    } else {
+        let player = args.rest();
+        match player_price(String::from(player)).await {
+            Ok(prices) => if let Err(err) = msg.channel_id.say(ctx, prices).await {
+                log::error!("Failed sending message: {}", err);
+            }, 
+        
+            Err(err) => {
+                log::error!("Failed getting futbin price: {}", err);
+                if let Err(err) = msg.reply(ctx, "Failed getting futbin price").await {
+                    log::error!("Failed sending message: {}", err);
+                }
+            }
+        }
     }
 
     Ok(())
