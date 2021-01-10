@@ -4,9 +4,9 @@ use serenity::model::id::{ ChannelId, UserId };
 use serenity::model::gateway::Activity;
 use serenity::framework::standard::{
     CommandResult,
-    CheckResult,
     Args,
     CommandOptions,
+    Reason,
     macros::{
         command,
         group,

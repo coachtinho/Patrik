@@ -43,6 +43,7 @@ async fn error_hook(ctx: &Context, msg: &Message, error: DispatchError) {
 #[tokio::main]
 async fn main() {
     let log_level = dotenv::var("LOG_LEVEL").unwrap_or(String::from("patrik=info"));
+    let prefix = dotenv::var("PREFIX").expect("Failed to get prefix");
 
     env_logger::Builder::from_env(Env::default().default_filter_or(log_level))
         .format_timestamp(None)
@@ -50,7 +51,7 @@ async fn main() {
 
     // TODO: Add help function
     let framework = StandardFramework::new()
-        .configure(|c| c.prefix("$$"))
+        .configure(|c| c.prefix(prefix.as_str()))
         .unrecognised_command(unrecognised_hook)
         .on_dispatch_error(error_hook)
         .group(&general::GENERAL_GROUP)

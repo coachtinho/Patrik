@@ -8,18 +8,24 @@ pub struct Owner;
 
 // Checks if author of messaage is bot owner
 #[check]
-async fn is_owner(_: &Context, msg: &Message, _: &mut Args, _: &CommandOptions) -> CheckResult {
+async fn is_owner(_: &Context, msg: &Message, _: &mut Args, _: &CommandOptions) -> Result<(), Reason> {
     log::debug!("Checking if is owner");
 
     if let Ok(owner) = dotenv::var("OWNER_ID") {
         let owner = owner.parse::<u64>().unwrap_or(0); 
-        if owner == *msg.author.id.as_u64() {
-            CheckResult::Success
+        if owner != *msg.author.id.as_u64() {
+            Err(Reason::UserAndLog {
+                user: String::from("Permission denied"),
+                log: String::from("User is not owner")
+            })
         } else {
-            CheckResult::new_user_and_log("Permission denied", "User is not owner")
+            Ok(())
         }
     } else {
-        CheckResult::new_user_and_log("Permission denied", "Failed to retrieve owner ID")
+        Err(Reason::UserAndLog {
+            user: String::from("Permission denied"),
+            log: String::from("Failed to retrieve owner id")
+        })
     }
 }
 

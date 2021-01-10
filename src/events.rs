@@ -3,7 +3,7 @@ use serenity::async_trait;
 use serenity::client::{ Context, EventHandler };
 use serenity::model::channel::{ Channel, Message };
 use serenity::model::gateway::Ready;
-use serenity::model::id::{ ChannelId, MessageId };
+use serenity::model::id::{ ChannelId, MessageId, GuildId };
 use patrik::*;
 use rand::Rng;
 
@@ -50,7 +50,7 @@ impl EventHandler for Handler {
     }
 
     // Deleted message event
-    async fn message_delete(&self, ctx: Context, channel_id: ChannelId, _: MessageId) {
+    async fn message_delete(&self, ctx: Context, channel_id: ChannelId, _: MessageId, _: Option<GuildId>) {
         match channel_id.to_channel(&ctx).await {
             Err(err) => log::error!("Failed getting deleted message channel: {:?}", err),
 
