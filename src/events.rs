@@ -1,11 +1,10 @@
-use log;
-use serenity::async_trait;
-use serenity::client::{ Context, EventHandler };
-use serenity::model::channel::{ Channel, Message };
-use serenity::model::gateway::Ready;
-use serenity::model::id::{ ChannelId, MessageId, GuildId };
 use patrik::*;
 use rand::Rng;
+use serenity::async_trait;
+use serenity::client::{Context, EventHandler};
+use serenity::model::channel::{Channel, Message};
+use serenity::model::gateway::Ready;
+use serenity::model::id::{ChannelId, GuildId, MessageId};
 
 pub struct Handler;
 
@@ -37,7 +36,7 @@ impl EventHandler for Handler {
                 msg.content_safe(&ctx).await
             ),
 
-            _ => log::warn!("Unkown message channel")
+            _ => log::warn!("Unkown message channel"),
         }
 
         if msg.content.contains("hello") {
@@ -50,7 +49,13 @@ impl EventHandler for Handler {
     }
 
     // Deleted message event
-    async fn message_delete(&self, ctx: Context, channel_id: ChannelId, _: MessageId, _: Option<GuildId>) {
+    async fn message_delete(
+        &self,
+        ctx: Context,
+        channel_id: ChannelId,
+        _: MessageId,
+        _: Option<GuildId>,
+    ) {
         match channel_id.to_channel(&ctx).await {
             Err(err) => log::error!("Failed getting deleted message channel: {:?}", err),
 
@@ -66,8 +71,8 @@ impl EventHandler for Handler {
                         log::error!("Failed sending message: {:?}", err);
                     }
                 }
-            },
+            }
             _ => {}
-        } 
+        }
     }
 }

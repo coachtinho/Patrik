@@ -1,22 +1,15 @@
 use serenity::client::Context;
-use serenity::model::channel::Message;
-use serenity::model::id::{ ChannelId, UserId };
-use serenity::model::gateway::Activity;
 use serenity::framework::standard::{
-    CommandResult,
-    Args,
-    CommandOptions,
-    Reason,
-    macros::{
-        command,
-        group,
-        check,
-    },
+    macros::{check, command, group},
+    Args, CommandOptions, CommandResult, Reason,
 };
-use log;
+use serenity::model::channel::Message;
+use serenity::model::gateway::Activity;
+use serenity::model::id::{ChannelId, UserId};
+// use log;
 use patrik::*;
 use select::document::Document;
-use select::predicate::{ Predicate, Class, Not };
+use select::predicate::{Class, Not, Predicate};
 
 // Command groups must be added here
 pub mod general;
@@ -28,7 +21,11 @@ pub mod owner;
 // Get's player fut price from futbin
 pub async fn player_price(query: String) -> Result<String, String> {
     let mut prices = String::new();
-    let url = format!("{}{}", "https://www.futbin.com/21/players?page=1&search=", query.as_str());
+    let url = format!(
+        "{}{}",
+        "https://www.futbin.com/21/players?page=1&search=",
+        query.as_str()
+    );
 
     match reqwest::get(&url).await {
         Ok(body) => match body.text().await {
@@ -46,7 +43,7 @@ pub async fn player_price(query: String) -> Result<String, String> {
                         .unwrap()
                         .text();
 
-                    let  rating = player
+                    let rating = player
                         .find(Class("rating").and(Not(Class("player_img"))))
                         .into_selection()
                         .first()
@@ -71,11 +68,11 @@ pub async fn player_price(query: String) -> Result<String, String> {
                 }
 
                 Ok(prices)
-            },
+            }
 
-            Err(err) => Err(err.to_string())
+            Err(err) => Err(err.to_string()),
         },
 
-        Err(err) => Err(err.to_string())
+        Err(err) => Err(err.to_string()),
     }
 }

@@ -58,3 +58,6 @@ cargo:
   script:
     - rustc --version && cargo --version  # Print version info for debugging
     - cargo build --workspace --verbose --release
+  stage: test
+  script:
+    - cargo clippy

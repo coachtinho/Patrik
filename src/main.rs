@@ -1,15 +1,11 @@
 mod commands;
 mod events;
 
-use serenity::client::{ Client, Context };
-use serenity::framework::standard::{ StandardFramework, DispatchError, Reason };
-use serenity::framework::standard::macros::hook;
-use serenity::model::channel::Message;
-use dotenv;
-use log;
-use env_logger;
 use env_logger::Env;
-
+use serenity::client::{Client, Context};
+use serenity::framework::standard::macros::hook;
+use serenity::framework::standard::{DispatchError, Reason, StandardFramework};
+use serenity::model::channel::Message;
 
 // Command groups must be imported and added to the framework
 use commands::general;
@@ -26,23 +22,15 @@ async fn unrecognised_hook(ctx: &Context, msg: &Message, _: &str) {
 // Function to run whenever a command returns an error
 #[hook]
 async fn error_hook(ctx: &Context, msg: &Message, error: DispatchError) {
-    match error {
-        DispatchError::CheckFailed(_, reason) => {
-            match reason {
-                Reason::UserAndLog{ user, log } => {
-                    msg.reply(ctx, user).await.unwrap();
-                    log::warn!("Check failed: {}", log);
-                },
-                _ => {}
-            }
-        },
-        _ => {}
+    if let DispatchError::CheckFailed(_, Reason::UserAndLog { user, log }) = error {
+        msg.reply(ctx, user).await.unwrap();
+        log::warn!("Check failed: {}", log);
     }
 }
 
 #[tokio::main]
 async fn main() {
-    let log_level = dotenv::var("LOG_LEVEL").unwrap_or(String::from("patrik=info"));
+    let log_level = dotenv::var("LOG_LEVEL").unwrap_or_else(|_| String::from("patrik=info"));
     let prefix = dotenv::var("PREFIX").expect("Failed to get prefix");
 
     env_logger::Builder::from_env(Env::default().default_filter_or(log_level))
@@ -72,4 +60,3 @@ async fn main() {
         log::error!("Error ocurred while running the client: {:?}", why);
     }
 }
-
