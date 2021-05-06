@@ -54,11 +54,13 @@ before_script:
 
 
 # Use cargo to build the project
-build:cargo:
+cargo:
+  stage: build
   script:
     - rustc --version && cargo --version  # Print version info for debugging
     - cargo build --workspace --verbose --release
 
-test:lint:
+lint:
+  stage: test
   script:
     - cargo clippy
