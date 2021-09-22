@@ -57,8 +57,7 @@ before_script:
 cargo:
   stage: build
   script:
-    - rustc --version && cargo --version  # Print version info for debugging
-    - cargo build --workspace --verbose --release
+    - cargo build
 
 lint:
   stage: test

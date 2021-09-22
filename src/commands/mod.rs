@@ -23,7 +23,7 @@ pub async fn player_price(query: String) -> Result<String, String> {
     let mut prices = String::new();
     let url = format!(
         "{}{}",
-        "https://www.futbin.com/21/players?page=1&search=",
+        "https://www.futbin.com/22/players?page=1&search=",
         query.as_str()
     );
 
